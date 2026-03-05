@@ -1,7 +1,8 @@
 from enum import Enum
+from algorithm import find_process_SJF, find_process_SRTN
 
 class process_state(Enum):
-    NEW = "NEW"
+    NEW = "NEW" 
     READY = "READY" 
     RUNNING = "RUNNING"
     WAITING = "WAITING"
@@ -20,6 +21,7 @@ class process:
         self.remaining_time = 0       # Thời gian còn lại để hoàn thành tiến trình (dùng cho SRTN)
         self.waiting_time = 0         # Thời gian chờ của tiến trình
         self.finish_time = 0          # Thời gian hoàn thành của tiến trình
+        self.turnaround = 0            # Thời gian hoàn thành - thời gian đến   
         self.state = process_state.NEW
 
 class ScheduleQueue:
@@ -67,8 +69,18 @@ class Scheduler:
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def SJF(self, queue, time_run):
+        if not queue.processes:
+            return 0
+        select_process = find_process_SJF(queue.processes)
+        select_process.state = process_state.RUNNING
+        time_to_run = min(time_run, select_process.burst_time)
 
+        self.current_time += time_to_run
+        select_process.remaining_time -= time_to_run
+        
 
+    
 
 
 
