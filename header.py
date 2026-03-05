@@ -108,7 +108,16 @@ class Scheduler:
                 select_process.state = process_state.READY
         return time_to_run
     
+    def check_all_terminated(self):
+        for process in self.all_processes:
+            if process.state != process_state.TERMINATED:
+                return False
+        return True
     
+    def run(self):
+        pass
+    
+
 
 
 
