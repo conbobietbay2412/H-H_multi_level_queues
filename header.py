@@ -1,5 +1,5 @@
 from enum import Enum
-from algorithm import find_process_SJF, find_process_SRTN
+from algorithm import find_process_SJF_SRTN, compare_SRTN_SJF
 
 class process_state(Enum):
     NEW = "NEW" 
@@ -72,13 +72,45 @@ class Scheduler:
     def SJF(self, queue, time_run):
         if not queue.processes:
             return 0
-        select_process = find_process_SJF(queue.processes)
+        select_process = find_process_SJF_SRTN(queue.processes, queue.state)
         select_process.state = process_state.RUNNING
         time_to_run = min(time_run, select_process.burst_time)
 
         self.current_time += time_to_run
         select_process.remaining_time -= time_to_run
-        
+        if select_process.remaining_time == 0:
+            select_process.state = process_state.TERMINATED
+            select_process.finish_time = self.current_time
+            select_process.turnaround = select_process.finish_time - select_process.arrival_time
+            queue.processes.remove(select_process)
+        else:
+            select_process.state = process_state.READY
+        return time_to_run
+    
+    def SRTN(self, queue, time_run):
+        if not queue.processes:
+            return 0
+        time_to_run = 0
+        while time_to_run < time_run:
+            select_process = find_process_SJF_SRTN(queue.processes, queue.state)
+            if select_process is None:
+                break
+            select_process.state = process_state.RUNNING
+            self.current_time += 1
+            time_to_run += 1
+            select_process.remaining_time -= 1
+            if select_process.remaining_time == 0:
+                select_process.state = process_state.TERMINATED
+                select_process.finish_time = self.current_time
+                select_process.turnaround = select_process.finish_time - select_process.arrival_time
+                queue.processes.remove(select_process)
+            else:
+                select_process.state = process_state.READY
+        return time_to_run
+    
+    
+
+
 
     
 

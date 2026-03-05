@@ -13,13 +13,17 @@ def compare_SRTN_SJF(process1, process2):
     return process1.remaining_time < process2.remaining_time
 
 #dùng cả 2
-def find_process_SJF_SRTN (processes):
+def find_process_SJF_SRTN (processes, process_state):
     if(len(processes) == 0):
         return None
-    result = processes[0]
-    for p in processes[1:]:
-        if compare_SRTN_SJF(p, result):
-            result = p
+    ready_processes = []
+    for p in processes:
+        if(p.state == process_state.READY):
+            ready_processes.append(p)
+    result = ready_processes[0]
+    for process in ready_processes[1:]:
+        if compare_SRTN_SJF(process, result):
+            result = process
     return result
 
 # def find_process_SRTN (processes):
